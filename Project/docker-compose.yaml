@@ -1,47 +1,33 @@
-# This is just a template placeholder docker-compose file. Use relevant sections which are applicable, 
-# and feel free to customize.
-version: '3'
-
 services:
   frontend:
-    # Specify the build context for the frontend
     build:
-    # Map the host port to the container port
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-    # Specify dependencies (if applicable)
+      - "3000:3000"  # Map host port 3000 to container port 3000
     depends_on:
-
-    # Additional options (uncomment and configure as needed):
-    
-    # Specify environment variables if needed
-    # environment:
-    
-    # Specify volume for live code reloading (optional)
-    # volumes:
-    
-    # Specify the command to run the development server (if different from Dockerfile)
-    # command:
+      - backend
+    environment:
+      - NODE_ENV=development  # Can change to 'production' if needed
+    volumes:
+      - ./frontend:/app  # Enable live code reloading in development
+      - /app/node_modules  # Ensure `node_modules` is not overridden
+    command: npm start  # Run the development server
 
   backend:
-    # Specify the build context for the backend
     build:
-    # Map the host port to the container port
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-    
-    # Additional options (uncomment and configure as needed):
-    
-    # Specify environment variables if needed
-    # environment:
-    
-    # Specify volume for live code reloading (optional)
-    # volumes:
-    
-    # Specify the command to run the development server (if different from Dockerfile)
-    # command:
+      - "5000:5000"  # Map host port 5000 to container port 5000
+    environment:
+      - FLASK_ENV=development  # Enables debug mode for Flask
+      - PORT=5000
+    volumes:
+      - ./backend:/app  # Enable live code reloading in development
+    command: flask run --host=0.0.0.0 --port=5000  # Run the Flask development server
 
-# Additional components (uncomment and configure as needed):
-# Define a custom network (if applicable)
-# networks:
-
-# Define volumes (if applicable)
-# volumes:
+# Optional: Define networks if you want to separate components
+networks:
+  default:
+    driver: bridge
